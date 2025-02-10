@@ -2,126 +2,99 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mon Profil OnlyFans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue</title>
   <style>
-    /* Réinitialisation de base */
-    * {
+    /* Fond de page avec un dégradé bleu contrastant pour l'arrière-plan */
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background-color: #FFFFFF; /* Fond sombre OnlyFans */
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-    }
-    
-    /* Logo OnlyFans */
-    .logo-container img {
-      max-width: 400px;
-      width: 100%;
-      height: auto;
-      margin: 20px auto;
-    }
-    
-    /* Conteneur de l'image de profil */
-    .profile-container {
-      width: 75%; /* Taille du carré */
-      max-width: 400px; /* Limite pour éviter trop grande image */
-      background: white; /* Fond blanc */
-      padding: 10px;
-      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0096FF, #66CCFF);
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 20px auto;
     }
-    
-    .profile-container img {
-      width: 25%; /* Ajuste à 75% de la largeur du carré */
-      height: auto; /* Respecte l'aspect ratio */
-      border-radius: 5px;
-    }
-    
-    /* Contenu principal */
-    .hero {
-      max-width: 600px;
-      margin: 40px auto;
+    /* Conteneur principal en blanc pour contraster avec le fond */
+    .container {
+      background-color: #FFFFFF;
       padding: 40px;
-      background: #1a1a1a; /* Fond plus clair */
       border-radius: 10px;
-      box-shadow: 0px 0px 20px rgba(0, 157, 255, 0.4);
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
     }
-    
-    .hero h1 {
-      font-size: 2.5em;
+    /* Logo OnlyFans */
+    .logo img {
+      width: 300px;
       margin-bottom: 20px;
-      color: #009dff; /* Bleu OnlyFans */
     }
-    
-    .hero p {
-      font-size: 1.2em;
-      margin-bottom: 30px;
-      color: #ddd;
+    /* Photo de profil */
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #0096FF;
+      margin-bottom: 20px;
     }
-    
-    /* Boutons */
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
+    /* Titre principal en noir */
+    h1 {
+      color: #000000;
+      margin-bottom: 20px;
+      font-size: 2rem;
     }
-    
+    /* Texte secondaire (exemple) */
+    p {
+      color: #F5F5F5;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    /* Styles généraux pour les boutons */
     .btn {
+      display: inline-block;
       text-decoration: none;
       padding: 15px 30px;
+      font-size: 1rem;
       border-radius: 5px;
-      font-size: 1em;
-      transition: all 0.3s ease;
+      transition: background 0.3s ease, color 0.3s ease;
+      margin: 10px;
     }
-    
-    .btn.primary {
-      background-color: #009dff;
-      color: #fff;
-      border: none;
+    /* Bouton "Mon Profile" */
+    .btn-profile {
+      background-color: #0096FF;
+      color: #FFFFFF;
+      border: 2px solid #0096FF;
     }
-    
-    .btn.secondary {
-      background-color: transparent;
-      border: 2px solid #009dff;
-      color: #009dff;
+    .btn-profile:hover {
+      background-color: #FFFFFF;
+      color: #0096FF;
     }
-    
-    .btn:hover {
-      opacity: 0.8;
+    /* Bouton "PROMO 1 mois gratuit" */
+    .btn-promo {
+      background-color: #FFFFFF;
+      color: #0096FF;
+      border: 2px solid #0096FF;
+    }
+    .btn-promo:hover {
+      background-color: #0096FF;
+      color: #FFFFFF;
     }
   </style>
 </head>
 <body>
-  <!-- Logo OnlyFans -->
-  <div class="logo-container">
-    <img src="OnlyFans_Logo_Full_Blue.png" alt="Logo OnlyFans">
-  </div>
-
-  <!-- Conteneur de l'image de profil -->
-  <div class="profile-container">
-    <img src="IMG_1244-XO.JPG" alt="Photo de profil">
-  </div>
-
-  <!-- Contenu principal -->
-  <div class="hero">
-    <h1>Bienvenue sur mon profil</h1>
-    <p>Découvrez du contenu exclusif et profitez d'offres spéciales sur OnlyFans.</p>
-    <div class="buttons">
-      <!-- Remplacez "https://votre-lien.com" par le lien final -->
-      <a href="https://www.onlyfans.com/amelina_XO" class="btn primary">Mon Profil</a>
-      <a href="https://www.onlyfans.com/promo" class="btn secondary">PROMO 1 Mois Gratuit</a>
+  <div class="container">
+    <!-- Logo OnlyFans -->
+    <div class="logo">
+      <img src="OnlyFans_Logo_Full_Blue.png" alt="Logo OnlyFans">
     </div>
+    <!-- Photo de profil -->
+    <img src="IMG_1244-XO.JPG">
+    <h1>Bienvenue sur mon site !</h1>
+    <a href="https://www.onlyfans.com/amelina_XO" class="btn btn-profile">Mon Profile</a>
+    <a href="https://onlyfans.com/amelina_xo/trial/hrv91a5mrv06fvn1uavqwfknsnrm1kbc" class="btn btn-promo">PROMO 1 mois gratuit</a>
   </div>
 </body>
 </html>

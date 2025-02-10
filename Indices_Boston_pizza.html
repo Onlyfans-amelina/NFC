@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chasse aux Indices</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #0096FF, #66CCFF);
+      color: #000;
+      padding: 50px;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: auto;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px auto;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn-primary { background-color: #0096FF; color: white; }
+    .btn-primary:hover { background-color: #007acc; }
+    .btn-disabled { background-color: gray; color: white; cursor: not-allowed; }
+    #indice1, #indice2, #indice3, #timer2, #timer3 { display: none; }
+    .timer { font-size: 1rem; color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chasse aux Indices 🔎</h1>
+    <p>Utilise les indices pour trouver le tag caché !</p>
+
+    <!-- Bouton Indice 1 -->
+    <button id="btnIndice1" class="btn btn-primary" onclick="revealIndice(1)">Obtenir Indice 1</button>
+    <p id="indice1"><strong>Indice 1 :</strong> Regarde là où on ne t'attend pas... 👀</p>
+
+    <!-- Bouton Indice 2 (avec timer) -->
+    <button id="btnIndice2" class="btn btn-disabled" disabled>Indice 2 <span id="timer2"></span></button>
+    <p id="indice2"><strong>Indice 2 :</strong> Parfois, il faut lever les yeux pour voir ce qui est caché.</p>
+
+    <!-- Bouton Indice 3 (avec timer) -->
+    <button id="btnIndice3" class="btn btn-disabled" disabled>Indice 3 <span id="timer3"></span></button>
+    <p id="indice3"><strong>Indice 3 :</strong> Si tu veux d'autre indice écrit moi em privé sur mon profile!</p>
+
+    <!-- Bouton final -->
+    <a id="btnFinal" href="https://onlyfans.com/amelina_XO" class="btn btn-primary" style="display: none; margin: 0 auto;">Clique ici pour voir la suite !</a>
+  </div>
+
+  <script>
+    function revealIndice(num) {
+      document.getElementById(`indice${num}`).style.display = 'block';
+      document.getElementById(`btnIndice${num}`).style.display = 'none';
+
+      if (num === 1) {
+        document.getElementById("timer2").style.display = 'inline';
+        startTimer(30, "timer2", "btnIndice2");
+      } else if (num === 2) {
+        document.getElementById("timer3").style.display = 'inline';
+        startTimer(30, "timer3", "btnIndice3");
+      } else if (num === 3) {
+        document.getElementById("btnFinal").style.display = 'block';
+      }
+    }
+
+    function startTimer(duration, timerId, buttonId) {
+      let timer = duration, seconds;
+      document.getElementById(timerId).textContent = `(Attends ${duration}s)`;
+      const interval = setInterval(function () {
+        seconds = parseInt(timer % 60, 10);
+        document.getElementById(timerId).textContent = `(Attends ${seconds}s)`;
+
+        if (--timer < 0) {
+          clearInterval(interval);
+          document.getElementById(buttonId).classList.remove("btn-disabled");
+          document.getElementById(buttonId).classList.add("btn-primary");
+          document.getElementById(buttonId).disabled = false;
+          document.getElementById(buttonId).setAttribute("onclick", `revealIndice(${buttonId.slice(-1)})`);
+          document.getElementById(timerId).textContent = "";
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

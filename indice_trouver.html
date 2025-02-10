@@ -3,132 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenue</title>
+  <title>Nouvelle Page</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0096FF, #66CCFF);
-      height: 120vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
     }
     .container {
-      background-color: #FFFFFF;
-      padding: 40px;
-      border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 90%;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .logo img {
-      width: 400px;
-      margin-bottom: 20px;
-    }
-    .profile-img {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 4px solid #0096FF;
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #000000;
-      margin-bottom: 20px;
-      font-size: 2rem;
-    }
-    p {
-      color: #000000;
-      margin-bottom: 20px;
-      font-size: 1rem;
-    }
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      padding: 15px 30px;
-      font-size: 1rem;
-      border-radius: 5px;
-      transition: background 0.3s ease, color 0.3s ease;
-      margin: 10px;
-      background-color: #0096FF;
-      color: #FFFFFF;
-      border: 2px solid #0096FF;
-    }
-    .btn:hover {
-      background-color: #FFFFFF;
-      color: #0096FF;
-    }
-    #promo-section {
-      margin-top: 20px;
-    }
-    #accessLink {
-      display: none;
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">
-      <img src="OnlyFans_Logo_Full_Blue.png" alt="Logo OnlyFans">
-    </div>
-    <img src="20240906_221432.JPG" alt="Photo de profil" class="profile-img">
-    <h1>Salut, l’intrépide 😏</h1>
-    <p><strong>Un NFC tag dans les toilettes du Boston… Pas pire comme idée, tu crois ?</strong></p>
-    <p>Moi, c’est <strong>Amélina</strong>, chaude et sexy, made in Sherbrooke. J’adore flirter avec la curiosité des gens… un défi qui m’allume. 🔥</p>
-    <p><strong>Alors, ton plat est bon ? Moi, je viens de me prendre une Meateor, ma pizza préférée ici. 🍕</strong></p>
-    <p>Maintenant que t’es là, une seule question reste : <strong>vas-tu oser découvrir ce qui t’attend ? 😉</strong></p>
-    <p>J'ai caché un autre TAG dans le restaurant. Il contient une photo très chaude pour toi... <strong>Clique sur indice si tu veux la découvrir! Sinon abonne-toi!</strong></p>
-    
-    <a href="https://www.onlyfans.com/amelina_XO" class="btn">Mon Profile</a>
-    <a href="https://onlyfans-amelina.github.io/NFC/Indices_Boston_pizza.html" class="btn">Indice</a>
-    
-    <div id="promo-section">
-      <h2>Code</h2>
-     
-      <input type="text" id="promoCode" placeholder="Entre ton code...">
-      <button class="btn" id="validatePromo">Valider</button>
-      <a id="accessLink" href="https://onlyfans.com/amelina_xo/trial/hkcibzgytiztyctslck1dboauyohvlnz" class="btn">Accès Gratuit</a>
-    </div>
+    <h1>Bienvenue sur la Nouvelle Page</h1>
+    <p>Voici une belle image :</p>
+    <img src="IMG_0690_XO.JPG" alt="Image illustrée">
   </div>
-  
-
-  <script>
-    document.getElementById("validatePromo").addEventListener("click", function() {
-      let enteredCode = document.getElementById("promoCode").value;
-      let validCodes = ["CODE123", "SEXYFREE", "BOSTONVIP"]; // Ajoute ici tes codes valides
-      
-      if (validCodes.includes(enteredCode)) {
-        document.getElementById("accessLink").style.display = "inline-block";
-        document.getElementById("validatePromo").style.display = "none";
-      } else {
-        alert("Code invalide. Réessaie encore!");
-      }
-    });
-  </script>
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CN4MHKVDQ8"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CN4MHKVDQ8');
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      let params = new URLSearchParams(window.location.search);
-      if (!params.has("utm_source")) {
-        let utm_source = "github";
-        let utm_medium = "organic";
-        let utm_campaign = "default";
-        let newUrl = window.location.href + (window.location.href.includes("?") ? "&" : "?") +
-                     `utm_source=${utm_source}&utm_medium=${utm_medium}&utm_campaign=${utm_campaign}`;
-        window.history.replaceState({}, document.title, newUrl);
-      }
-    });
-  </script>
 </body>
 </html>

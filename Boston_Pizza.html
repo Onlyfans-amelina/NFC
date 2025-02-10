@@ -116,3 +116,20 @@
 
   gtag('config', 'G-CN4MHKVDQ8');
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let params = new URLSearchParams(window.location.search);
+    
+    if (!params.has("utm_source")) {
+      let utm_source = "github";
+      let utm_medium = "organic";
+      let utm_campaign = "default";
+      
+      let newUrl = window.location.href + (window.location.href.includes("?") ? "&" : "?") +
+                   `utm_source=${utm_source}&utm_medium=${utm_medium}&utm_campaign=${utm_campaign}`;
+      
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  });
+</script>
+

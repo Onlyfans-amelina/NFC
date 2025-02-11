@@ -10,38 +10,63 @@
       padding: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #0096FF, #66CCFF);
-      height: 120vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
     .container {
-      background-color: #FFFFFF;
+      position: relative;
+      /* Effet glassmorphism */
+      background: rgba(20, 20, 20, 0.7); /* fond gris foncé translucide */
+      border: 1px solid rgba(255, 255, 255, 0.2); /* bordure discrète */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      
       padding: 40px;
       border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       max-width: 400px;
       width: 90%;
+      overflow: hidden;
     }
     .logo img {
-      width: 400px;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    /* Conteneur pour l'image de profil et le badge SVG */
+    .profile-wrapper {
+      position: relative;
+      display: inline-block;
       margin-bottom: 20px;
     }
     .profile-img {
-      width: 300px;
-      height: 300px;
+      width: 100%;
+      max-width: 300px;
+      height: auto;
       border-radius: 50%;
       border: 4px solid #0096FF;
-      margin-bottom: 20px;
+      display: block;
+    }
+    /* Positionnement du SVG dans le coin supérieur droit de la photo */
+    .local-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80px;
+      height: auto;
+      z-index: 10;
     }
     h1 {
-      color: #000000;
+      color: #FFFFFF; /* Adaptation du texte pour le fond sombre */
       margin-bottom: 20px;
       font-size: 2rem;
     }
     p {
-      color: #000000;
+      color: #FFFFFF; /* Adaptation du texte pour le fond sombre */
       margin-bottom: 20px;
       font-size: 1rem;
     }
@@ -67,6 +92,37 @@
     #accessLink {
       display: none;
     }
+    /* Media Queries pour une meilleure adaptation sur différents écrans */
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px;
+      }
+      h1 {
+        font-size: 1.75rem;
+      }
+      p {
+        font-size: 0.9rem;
+      }
+      .btn {
+        padding: 12px 25px;
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      p {
+        font-size: 0.85rem;
+      }
+      .btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -74,11 +130,27 @@
     <div class="logo">
       <img src="OnlyFans_Logo_Full_Blue.png" alt="Logo OnlyFans">
     </div>
-    <img src="20240906_221432.JPG" alt="Photo de profil" class="profile-img">
+    
+    <!-- Enveloppe pour la photo de profil et le badge SVG -->
+    <div class="profile-wrapper">
+      <img src="20240906_221432.JPG" alt="Photo de profil" class="profile-img">
+      <!-- Nouveau Badge SVG en coin supérieur droit -->
+      <svg class="local-badge" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <!-- Cercle de fond -->
+        <circle cx="100" cy="100" r="85" fill="#000000" />
+        <!-- Anneau doré -->
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#C9A66B" stroke-width="5"/>
+        <!-- Texte centré, style "distingué" -->
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="#FFFFFF" font-family="Times New Roman, serif" font-size="24" font-weight="bold">
+          100% LOCAL
+        </text>
+      </svg>
+    </div>
+    
     <h1>Salut, l’intrépide 😏</h1>
     <p><strong>Un NFC tag dans les toilettes du Boston… Pas pire comme idée, tu crois ?</strong></p>
     <p>Moi, c’est <strong>Amélina</strong>, chaude et sexy, made in Sherbrooke. J’adore flirter avec la curiosité des gens… un défi qui m’allume. 🔥</p>
-    <p><strong>Alors, ton plat est bon ? Moi, je viens de me prendre une Meateor, ma pizza préférée ici. 🍕</strong></p>
+    <p><strong>Alors, ton plat est bon ? Moi, je viens de me prendre une </strong>Meateor</strong>, ma pizza préférée chez Boston Pizza. 🍕</strong></p>
     <p>Maintenant que t’es là, une seule question reste : <strong>vas-tu oser découvrir ce qui t’attend ? 😉</strong></p>
     <p>J'ai caché un autre TAG dans le restaurant. Il contient une photo très chaude pour toi... <strong>Clique sur indice si tu veux la découvrir! Sinon abonne-toi!</strong></p>
     
@@ -87,18 +159,16 @@
     
     <div id="promo-section">
       <h2>Code</h2>
-     
       <input type="text" id="promoCode" placeholder="Entre ton code...">
       <button class="btn" id="validatePromo">Valider</button>
       <a id="accessLink" href="https://onlyfans.com/amelina_xo/trial/hkcibzgytiztyctslck1dboauyohvlnz" class="btn">Accès Gratuit</a>
     </div>
   </div>
   
-
   <script>
     document.getElementById("validatePromo").addEventListener("click", function() {
       let enteredCode = document.getElementById("promoCode").value;
-      let validCodes = ["CODE123", "SEXYFREE", "BOSTONVIP"]; // Ajoute ici tes codes valides
+      let validCodes = ["CODE123", "SEXYFREE", "BOSTONVIP"]; // Ajoutez ici vos codes valides
       
       if (validCodes.includes(enteredCode)) {
         document.getElementById("accessLink").style.display = "inline-block";
@@ -109,7 +179,7 @@
     });
   </script>
   
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Tag Manager -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CN4MHKVDQ8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];

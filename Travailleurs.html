@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message pour employé(e)/gérant(e)</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0096FF, #66CCFF);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      position: relative;
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 90%;
+      color: #FFFFFF;
+    }
+    .image-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .image-header img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .content p {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .button-group {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 15px 30px;
+      font-size: 1rem;
+      border-radius: 5px;
+      transition: background 0.3s ease, color 0.3s ease;
+      margin: 10px;
+      background-color: #0096FF;
+      color: #FFFFFF;
+      border: 2px solid #0096FF;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #FFFFFF;
+      color: #0096FF;
+    }
+    .email-input-container {
+      margin-top: 10px;
+    }
+    .email-input-container input[type="email"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    .email-input-container button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 2px solid #0096FF;
+      background-color: #0096FF;
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .email-input-container button:hover {
+      background-color: #FFFFFF;
+      color: #0096FF;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px;
+      }
+      .btn {
+        padding: 12px 25px;
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+      .btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="image-header">
+      <img src="IMG_9931.jpg" alt="Image de présentation">
+    </div>
+    
+    <div class="content">
+      <p><strong>Cher employé(e)/gérant(e),</strong></p>
+      <p>
+        Tout d’abord, je tiens à <strong>m’excuser</strong> d’avoir placé une promotion <strong>sans sollicitation préalable</strong> dans votre établissement. 
+        Je comprends que cela puisse soulever des questions, et ce n’était <strong>pas mon intention</strong> de vous mettre dans une situation inconfortable.
+      </p>
+      <p>
+        Cependant, tout comme le <strong>dumpster diving</strong>, la loi ne l’interdit pas explicitement, 
+        mais <strong>solliciter directement un commerçant mène presque inévitablement à un refus</strong>. 
+        À l’inverse, <strong>un choix volontaire d’ignorer ou d'accepter cet élément</strong> peut créer une situation <strong>bénéfique pour tout le monde</strong>.
+      </p>
+      <p>
+        Voyez aussi cela comme <strong>une opportunité originale de placement de produit</strong> : ce tag fait partie d’<strong>un jeu</strong> 
+        qui se poursuit dans <strong>d’autres restaurants de Sherbrooke</strong>. 
+        <strong>Les curieux</strong> qui tombent dessus sont invités à <strong>explorer</strong> et à <strong>découvrir d’autres établissements</strong>, 
+        créant ainsi une <strong>interaction ludique</strong> qui peut aussi <strong>profiter à votre commerce</strong>. 
+        D’ailleurs, je suis une <strong>grande fan</strong> de votre <strong>Meateor</strong>, c’est clairement mon <strong>plat favori</strong> ici ! 🍕🔥
+      </p>
+      <p>
+        Je tiens également à préciser que <strong>tout mon matériel est protégé par une fenêtre de 18 ans et plus</strong>, 
+        garantissant ainsi un <strong>accès uniquement aux adultes</strong>. 
+        Toutefois, si jamais ce tag posait le moindre <strong>problème avec un client ou avec la direction</strong>, 
+        n’hésitez pas à le <strong>jeter immédiatement</strong>, afin de <strong>satisfaire toutes les parties concernées</strong>.
+      </p>
+      <p>
+        Quoi qu’il en soit, je vous remercie pour votre <strong>patience</strong> et votre <strong>compréhension</strong>. 
+        Mon intention reste avant tout <strong>ludique et respectueuse</strong>, et j’espère que cette initiative pourra être vue comme 
+        un <strong>petit clin d’œil original</strong> à votre clientèle.
+      </p>
+      <p><strong>Bonne journée à vous, et bon service ! 😊</strong></p>
+    </div>
+    
+    <div class="button-group">
+      <button class="btn" id="btn1">Retirer le dispositif promotionnel</button>
+      <button class="btn" id="btn2">Je n'ai pas vu, je n'ai pas entendu</button>
+      <button class="btn" id="btn3">Accès gratuit pour 1 mois</button>
+    </div>
+  </div>
+  
+  <script>
+    function createEmailInput(buttonId, redirectUrl) {
+      var btn = document.getElementById(buttonId);
+      var container = document.createElement('div');
+      container.className = 'email-input-container';
+      
+      var input = document.createElement('input');
+      input.type = 'email';
+      input.placeholder = 'Entrez votre email';
+      
+      var confirmBtn = document.createElement('button');
+      confirmBtn.textContent = 'Confirmer';
+      
+      confirmBtn.onclick = function() {
+        var email = input.value;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email)) {
+          window.location.href = redirectUrl;
+        } else {
+          alert('Veuillez entrer une adresse email valide.');
+        }
+      };
+      
+      container.appendChild(input);
+      container.appendChild(confirmBtn);
+      btn.parentNode.replaceChild(container, btn);
+    }
+    
+    document.getElementById('btn1').addEventListener('click', function() {
+      createEmailInput('btn1', 'pageX.html');
+    });
+
+    document.getElementById('btn2').addEventListener('click', function() {
+      window.location.href = 'lienXZ.html';
+    });
+
+    document.getElementById('btn3').addEventListener('click', function() {
+      window.location.href = 'free-access.html';
+    });
+  </script>
+</body>
+</html>

@@ -3,120 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chasse aux Indices</title>
+  <title>Indices en Rédaction</title>
   <style>
+    /* Style global identique */
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      text-align: center;
-      background: linear-gradient(135deg, #0096FF, #66CCFF);
-      color: #000;
-      padding: 50px;
+      background: linear-gradient(135deg, #B3E5FC, #E1F5FE);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+    /* Conteneur avec effet glassmorphism */
     .container {
-      background-color: white;
-      padding: 30px;
+      position: relative;
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 40px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       max-width: 400px;
-      margin: auto;
+      width: 90%;
+      color: #FFFFFF;
     }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    /* Bouton stylisé identique mais avec largeur réduite et centré */
     .btn {
       display: block;
-      width: 100%;
-      padding: 15px;
-      margin: 10px auto;
-      border: none;
-      border-radius: 5px;
+      width: 80%; /* largeur réduite */
+      text-align: center;
+      text-decoration: none;
+      padding: 15px 30px;
       font-size: 1rem;
+      border-radius: 5px;
+      transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+      margin: 10px auto; /* centré */
+      background-color: #0096FF;
+      color: #FFFFFF;
+      border: 2px solid #FFFFFF;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
-    .btn-primary { background-color: #0096FF; color: white; }
-    .btn-primary:hover { background-color: #007acc; }
-    .btn-disabled { background-color: gray; color: white; cursor: not-allowed; }
-    #indice1, #indice2, #indice3, #timer2, #timer3 { display: none; }
-    .timer { font-size: 1rem; color: red; }
+    .btn:hover {
+      background-color: #FFFFFF;
+      color: #0096FF;
+      border: 2px solid #FFFFFF;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Chasse aux Indices 🔎</h1>
-    <p>Utilise les indices pour trouver le tag caché !</p>
-
-    <!-- Bouton Indice 1 -->
-    <button id="btnIndice1" class="btn btn-primary" onclick="revealIndice(1)">Obtenir Indice 1</button>
-    <p id="indice1"><strong>Indice 1 :</strong> Regarde bien, je suis visble a l'oeil nue dans la maison 👀</p>
-
-    <!-- Bouton Indice 2 (avec timer) -->
-    <button id="btnIndice2" class="btn btn-disabled" disabled>Indice 2 <span id="timer2"></span></button>
-    <p id="indice2"><strong>Indice 2 :</strong> Parfois, il faut lever les yeux pour voir ce qui est caché.</p>
-
-    <!-- Bouton Indice 3 (avec timer) -->
-    <button id="btnIndice3" class="btn btn-disabled" disabled>Indice 3 <span id="timer3"></span></button>
-    <p id="indice3"><strong>Indice 3 :</strong> Si tu veux d'autre indice écrit moi em privé sur mon profile!</p>
-
-    <!-- Bouton final -->
-    <a id="btnFinal" href="https://onlyfans.com/amelina_XO" class="btn btn-primary" style="display: none; margin: 0 auto;">Clique ici pour voir la suite !</a>
+    <h1>Indices en Rédaction</h1>
+    <p>Les indices sont en pleine rédaction et seront disponibles plus tard aujourd'hui.</p>
+    <p>Merci de patienter et revenez plus tard pour découvrir les indices.</p>
+    <a href="index.html" class="btn">Retour à l'accueil</a>
   </div>
-
+  
+  <!-- Google Tag Manager -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CN4MHKVDQ8"></script>
   <script>
-    function revealIndice(num) {
-      document.getElementById(`indice${num}`).style.display = 'block';
-      document.getElementById(`btnIndice${num}`).style.display = 'none';
-
-      if (num === 1) {
-        document.getElementById("timer2").style.display = 'inline';
-        startTimer(60, "timer2", "btnIndice2");
-      } else if (num === 2) {
-        document.getElementById("timer3").style.display = 'inline';
-        startTimer(60, "timer3", "btnIndice3");
-      } else if (num === 3) {
-        document.getElementById("btnFinal").style.display = 'block';
-      }
-    }
-
-    function startTimer(duration, timerId, buttonId) {
-      let timer = duration, seconds;
-      document.getElementById(timerId).textContent = `(Attends ${duration}s)`;
-      const interval = setInterval(function () {
-        seconds = parseInt(timer % 60, 10);
-        document.getElementById(timerId).textContent = `(Attends ${seconds}s)`;
-
-        if (--timer < 0) {
-          clearInterval(interval);
-          document.getElementById(buttonId).classList.remove("btn-disabled");
-          document.getElementById(buttonId).classList.add("btn-primary");
-          document.getElementById(buttonId).disabled = false;
-          document.getElementById(buttonId).setAttribute("onclick", `revealIndice(${buttonId.slice(-1)})`);
-          document.getElementById(timerId).textContent = "";
-        }
-      }, 1000);
-    }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CN4MHKVDQ8');
   </script>
 </body>
 </html>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CN4MHKVDQ8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-CN4MHKVDQ8');
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    let params = new URLSearchParams(window.location.search);
-    
-    if (!params.has("utm_source")) {
-      let utm_source = "github";
-      let utm_medium = "organic";
-      let utm_campaign = "default";
-      
-      let newUrl = window.location.href + (window.location.href.includes("?") ? "&" : "?") +
-                   `utm_source=${utm_source}&utm_medium=${utm_medium}&utm_campaign=${utm_campaign}`;
-      
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  });
-</script>

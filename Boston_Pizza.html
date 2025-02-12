@@ -9,7 +9,8 @@
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0096FF, #66CCFF);
+      /* Dégradé adouci */
+      background: linear-gradient(135deg, #B3E5FC, #E1F5FE);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -18,11 +19,10 @@
     .container {
       position: relative;
       /* Effet glassmorphism */
-      background: rgba(20, 20, 20, 0.7); /* fond gris foncé translucide */
-      border: 1px solid rgba(255, 255, 255, 0.2); /* bordure discrète */
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      
       padding: 40px;
       border-radius: 10px;
       text-align: center;
@@ -37,7 +37,6 @@
       height: auto;
       margin-bottom: 20px;
     }
-    /* Conteneur pour l'image de profil et le badge SVG */
     .profile-wrapper {
       position: relative;
       display: inline-block;
@@ -51,7 +50,6 @@
       border: 4px solid #0096FF;
       display: block;
     }
-    /* Positionnement du SVG dans le coin supérieur droit de la photo */
     .local-badge {
       position: absolute;
       top: 0;
@@ -61,12 +59,12 @@
       z-index: 10;
     }
     h1 {
-      color: #FFFFFF; /* Adaptation du texte pour le fond sombre */
+      color: #FFFFFF;
       margin-bottom: 20px;
       font-size: 2rem;
     }
     p {
-      color: #FFFFFF; /* Adaptation du texte pour le fond sombre */
+      color: #FFFFFF;
       margin-bottom: 20px;
       font-size: 1rem;
     }
@@ -92,7 +90,6 @@
     #accessLink {
       display: none;
     }
-    /* Media Queries pour une meilleure adaptation sur différents écrans */
     @media (max-width: 768px) {
       .container {
         padding: 30px;
@@ -131,16 +128,11 @@
       <img src="OnlyFans_Logo_Full_Blue.png" alt="Logo OnlyFans">
     </div>
     
-    <!-- Enveloppe pour la photo de profil et le badge SVG -->
     <div class="profile-wrapper">
       <img src="20240906_221432.JPG" alt="Photo de profil" class="profile-img">
-      <!-- Nouveau Badge SVG en coin supérieur droit -->
       <svg class="local-badge" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <!-- Cercle de fond -->
         <circle cx="100" cy="100" r="85" fill="#000000" />
-        <!-- Anneau doré -->
         <circle cx="100" cy="100" r="90" fill="none" stroke="#C9A66B" stroke-width="5"/>
-        <!-- Texte centré, style "distingué" -->
         <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="#FFFFFF" font-family="Times New Roman, serif" font-size="24" font-weight="bold">
           100% LOCAL
         </text>
@@ -158,7 +150,7 @@
     <a href="https://onlyfans-amelina.github.io/NFC/Indices_Boston_pizza.html" class="btn">Indice</a>
     
     <div id="promo-section">
-      <h2>Code</h2>
+      <h1>Code</h1>
       <input type="text" id="promoCode" placeholder="Entre ton code...">
       <button class="btn" id="validatePromo">Valider</button>
       <a id="accessLink" href="https://onlyfans.com/amelina_xo/trial/hkcibzgytiztyctslck1dboauyohvlnz" class="btn">Accès Gratuit</a>
@@ -168,7 +160,7 @@
   <script>
     document.getElementById("validatePromo").addEventListener("click", function() {
       let enteredCode = document.getElementById("promoCode").value;
-      let validCodes = ["CODE123", "SEXYFREE", "BOSTONVIP"]; // Ajoutez ici vos codes valides
+      let validCodes = ["CODE123", "SEXYFREE", "BOSTONVIP"]; 
       
       if (validCodes.includes(enteredCode)) {
         document.getElementById("accessLink").style.display = "inline-block";

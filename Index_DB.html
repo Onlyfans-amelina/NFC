@@ -201,4 +201,345 @@
     const dynamicFields = document.getElementById("dynamic-fields");
     const addFieldBtn = document.getElementById("add-field-btn");
     const modalTitle = document.getElementById("modal-title");
-    const c
+    const crossRefContainer = document.getElementById("cross-ref-container");
+    const crossRefSelect = document.getElementById("cross-ref-select");
+    const mapContainer = document.getElementById("map-container");
+
+    // Variables pour la carte GPS
+    let map;
+    let marker;
+
+    // Variable pour gérer l'écouteur en temps réel
+    let unsubscribe = null;
+
+    // Variables globales pour la gestion de l'état
+    let currentCollection = ""; // Collection actuellement affichée
+    let currentDocId = null;    // Document en cours d'édition (null = ajout)
+    let fieldCounter = 0;       // Compteur pour les champs dynamiques
+
+    // ====================================================
+    // 3. Authentification Firebase
+    // ====================================================
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginContainer.style.display = "none";
+        mainContainer.style.display = "block";
+      } else {
+        loginContainer.style.display = "block";
+        mainContainer.style.display = "none";
+      }
+    });
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Utilisateur connecté :", userCredential.user);
+          loginForm.reset();
+        })
+        .catch((error) => {
+          console.error("Erreur de connexion :", error);
+          alert("Erreur de connexion : " + error.message);
+        });
+    });
+
+    // ====================================================
+    // 4. Navigation entre la liste des collections et les documents
+    // ====================================================
+    document.querySelectorAll(".collection-link").forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentCollection = e.target.getAttribute("data-collection");
+        collectionTitle.textContent = "Collection : " + currentCollection;
+        collectionsList.style.display = "none";
+        collectionDetails.style.display = "block";
+        loadCollection(currentCollection);
+      });
+    });
+
+    backBtn.addEventListener("click", () => {
+      collectionDetails.style.display = "none";
+      collectionsList.style.display = "block";
+      tableHeader.innerHTML = "";
+      tableBody.innerHTML = "";
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+    });
+
+    function loadCollection(collectionName) {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      unsubscribe = onSnapshot(collection(db, collectionName), (querySnapshot) => {
+        tableHeader.innerHTML = "";
+        tableBody.innerHTML = "";
+        let keys = new Set();
+        const docsData = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          data.id = docSnap.id;
+          docsData.push(data);
+          Object.keys(data).forEach(key => keys.add(key));
+        });
+        keys = Array.from(keys);
+        keys.unshift("id");
+        keys.push("Actions");
+        keys.forEach(key => {
+          const th = document.createElement("th");
+          th.textContent = key;
+          tableHeader.appendChild(th);
+        });
+        docsData.forEach(docData => {
+          const tr = document.createElement("tr");
+          keys.forEach(key => {
+            const td = document.createElement("td");
+            if (key === "Actions") {
+              const editBtn = document.createElement("button");
+              editBtn.textContent = "Modifier";
+              editBtn.className = "btn btn-sm btn-warning mr-2";
+              editBtn.addEventListener("click", () => {
+                openEditModal(docData);
+              });
+              const deleteBtn = document.createElement("button");
+              deleteBtn.textContent = "Supprimer";
+              deleteBtn.className = "btn btn-sm btn-danger";
+              deleteBtn.addEventListener("click", () => {
+                if (confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
+                  deleteDocument(currentCollection, docData.id);
+                }
+              });
+              td.appendChild(editBtn);
+              td.appendChild(deleteBtn);
+            } else {
+              td.textContent = docData[key] !== undefined ? docData[key] : "";
+            }
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+      }, (error) => {
+        console.error("Erreur lors de l'écoute en temps réel :", error);
+        alert("Erreur lors du chargement de la collection : " + error.message);
+      });
+    }
+
+    async function deleteDocument(collectionName, docId) {
+      try {
+        await deleteDoc(doc(db, collectionName, docId));
+        alert("Document supprimé avec succès.");
+      } catch (error) {
+        console.error("Erreur lors de la suppression du document :", error);
+        alert("Erreur lors de la suppression du document : " + error.message);
+      }
+    }
+
+    // ====================================================
+    // 5. Gestion du Modal pour l'ajout / la modification
+    // ====================================================
+    addEntryBtn.addEventListener("click", () => {
+      currentDocId = null;
+      modalTitle.textContent = "Ajouter une entrée";
+      dynamicFields.innerHTML = "";
+      fieldCounter = 0;
+      addDynamicField(); // Ajout d'un premier champ
+      // Réinitialisation de la section cross reference et de la carte
+      crossRefContainer.style.display = "none";
+      crossRefSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
+      mapContainer.style.display = "none";
+      if (map) {
+        map.remove();
+        map = null;
+        marker = null;
+      }
+      // Si la collection est "tags" ou "chasses", activer cross reference et carte
+      if (currentCollection === "tags" || currentCollection === "chasses") {
+        loadCrossReference();
+        initializeMap();
+      }
+      entryModal.style.display = "block";
+    });
+
+    closeModalBtn.addEventListener("click", () => {
+      entryModal.style.display = "none";
+    });
+
+    // Fonction d'ajout de champ dynamique (Titre/Valeur)
+    function addDynamicField(key = "", value = "") {
+      const divKey = document.createElement("div");
+      divKey.className = "form-group";
+      const labelKey = document.createElement("label");
+      labelKey.textContent = "Titre de nouveau paramètre :";
+      labelKey.setAttribute("for", "field-key-" + fieldCounter);
+      const inputKey = document.createElement("input");
+      inputKey.type = "text";
+      inputKey.className = "form-control";
+      inputKey.id = "field-key-" + fieldCounter;
+      inputKey.value = key;
+      
+      const divValue = document.createElement("div");
+      divValue.className = "form-group";
+      const labelValue = document.createElement("label");
+      labelValue.textContent = "Valeur :";
+      labelValue.setAttribute("for", "field-value-" + fieldCounter);
+      const inputValue = document.createElement("input");
+      inputValue.type = "text";
+      inputValue.className = "form-control";
+      inputValue.id = "field-value-" + fieldCounter;
+      inputValue.value = value;
+
+      dynamicFields.appendChild(divKey);
+      divKey.appendChild(labelKey);
+      divKey.appendChild(inputKey);
+      dynamicFields.appendChild(divValue);
+      divValue.appendChild(labelValue);
+      divValue.appendChild(inputValue);
+
+      fieldCounter++;
+    }
+
+    addFieldBtn.addEventListener("click", () => {
+      addDynamicField();
+    });
+
+    entryForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {};
+      // Récupération des champs dynamiques
+      for (let i = 0; i < fieldCounter; i++) {
+        const keyInput = document.getElementById("field-key-" + i);
+        const valueInput = document.getElementById("field-value-" + i);
+        if(keyInput && valueInput) {
+          const key = keyInput.value.trim();
+          const value = valueInput.value.trim();
+          if(key !== "") {
+            if(!isNaN(value) && value !== "") {
+              data[key] = Number(value);
+            } else {
+              data[key] = value;
+            }
+          }
+        }
+      }
+      // Ajout de la référence croisée si présente
+      const crossRefValue = crossRefSelect.value;
+      if (crossRefValue !== "") {
+        data.crossRef = crossRefValue;
+      }
+      // Ajout de la position GPS si elle a été sélectionnée
+      if ((currentCollection === "tags" || currentCollection === "chasses") && marker) {
+        data.gps = {
+          lat: marker.getLatLng().lat,
+          lng: marker.getLatLng().lng
+        };
+      }
+      // Pour chaque nouvelle entrée, ajouter la date/heure en UTC-5 (ici, "America/Bogota")
+      if (!currentDocId) {
+        data.timestamp = new Date().toLocaleString("fr-FR", { timeZone: "America/Bogota" });
+      }
+      try {
+        if(currentDocId) {
+          const docRef = doc(db, currentCollection, currentDocId);
+          await updateDoc(docRef, data);
+          alert("Document mis à jour avec succès.");
+        } else {
+          await addDoc(collection(db, currentCollection), data);
+          alert("Document ajouté avec succès.");
+        }
+        entryModal.style.display = "none";
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement du document :", error);
+        alert("Erreur lors de l'enregistrement du document : " + error.message);
+      }
+    });
+
+    function openEditModal(docData) {
+      currentDocId = docData.id;
+      modalTitle.textContent = "Modifier l'entrée";
+      dynamicFields.innerHTML = "";
+      fieldCounter = 0;
+      // Pour chaque champ (sauf certains réservés) on crée un champ dynamique
+      for (const key in docData) {
+        if (key === "id" || key === "gps" || key === "crossRef" || key === "timestamp") continue;
+        addDynamicField(key, docData[key]);
+      }
+      // Si une référence croisée existe, la sélectionner
+      if (docData.crossRef) {
+        loadCrossReference(docData.crossRef);
+      } else if (currentCollection === "tags" || currentCollection === "chasses") {
+        loadCrossReference();
+      }
+      // Initialiser la carte GPS si applicable
+      mapContainer.style.display = "none";
+      if (currentCollection === "tags" || currentCollection === "chasses") {
+        initializeMap();
+        // Placer le marqueur si une position est présente dans le document
+        if (docData.gps && docData.gps.lat && docData.gps.lng) {
+          marker = L.marker([docData.gps.lat, docData.gps.lng]).addTo(map);
+          map.setView([docData.gps.lat, docData.gps.lng], 10);
+        }
+      }
+      entryModal.style.display = "block";
+    }
+
+    // Initialisation de la carte GPS avec Leaflet
+    function initializeMap() {
+      mapContainer.style.display = "block";
+      if (!map) {
+        map = L.map('map-container').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+           attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        map.on('click', function(e) {
+          if (marker) {
+            marker.setLatLng(e.latlng);
+          } else {
+            marker = L.marker(e.latlng).addTo(map);
+          }
+        });
+      }
+    }
+
+    // Chargement de la référence croisée (pour "tags" ou "chasses")
+    async function loadCrossReference(selectedValue = "") {
+      crossRefSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
+      let targetCollection = "";
+      if (currentCollection === 'tags') {
+         targetCollection = "chasses";
+      } else if (currentCollection === 'chasses') {
+         targetCollection = "tags";
+      }
+      if (targetCollection) {
+        crossRefContainer.style.display = "block";
+        try {
+          const querySnapshot = await getDocs(collection(db, targetCollection));
+          querySnapshot.forEach(docSnap => {
+            const option = document.createElement("option");
+            option.value = docSnap.id;
+            option.textContent = docSnap.id;
+            if (docSnap.id === selectedValue) {
+              option.selected = true;
+            }
+            crossRefSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erreur lors du chargement des références croisées:", error);
+        }
+      } else {
+        crossRefContainer.style.display = "none";
+      }
+    }
+
+    window.onclick = function(event) {
+      if (event.target === entryModal) {
+        entryModal.style.display = "none";
+      }
+    }
+  </script>
+  <!-- Inclusion de Leaflet JS pour la carte -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</body>
+</html>

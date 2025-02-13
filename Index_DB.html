@@ -6,8 +6,31 @@
   <title>Gestionnaire Firestore en Temps Réel</title>
   <!-- Inclusion de Bootstrap pour la mise en forme -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Inclusion de Leaflet pour la carte GPS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    /* Styles personnalisés */
+    :root {
+      --primary-color: #87CEFA; /* Bleu clair */
+      --primary-hover: #00BFFF;
+      --background: #f5f5f5;
+    }
+    body {
+      background-color: var(--background);
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
     .modal {
       display: none; /* Masqué par défaut */
       position: fixed;
@@ -28,6 +51,11 @@
     }
     .mr-2 {
       margin-right: 0.5rem;
+    }
+    #map-container {
+      height: 300px;
+      margin-bottom: 15px;
+      display: none;
     }
   </style>
 </head>
@@ -105,9 +133,20 @@
           <!-- Formulaire dynamique pour saisir les champs du document -->
           <form id="entry-form">
             <div id="dynamic-fields">
-              <!-- Un ensemble initial de champs sera ajouté dynamiquement -->
+              <!-- Les champs seront ajoutés dynamiquement -->
             </div>
-            <!-- Bouton pour ajouter des champs dynamiques (clé/valeur) -->
+            <!-- Section pour la référence croisée -->
+            <div id="cross-ref-container" style="display:none;">
+              <div class="form-group">
+                <label for="cross-ref-select">Référence croisée :</label>
+                <select id="cross-ref-select" class="form-control">
+                  <option value="">-- Sélectionner --</option>
+                </select>
+              </div>
+            </div>
+            <!-- Conteneur pour la carte GPS -->
+            <div id="map-container"></div>
+            <!-- Bouton pour ajouter des champs dynamiques (Titre/Valeur) -->
             <button type="button" class="btn btn-info" id="add-field-btn">Ajouter un champ</button>
             <br><br>
             <button type="submit" class="btn btn-primary" id="save-entry-btn">Enregistrer</button>
@@ -119,23 +158,21 @@
 
   <!-- Inclusion des SDK Firebase en mode module -->
   <script type="module">
-    // Importation des fonctions nécessaires depuis Firebase (version 9+)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     // ====================================================
     // 1. Configuration Firebase
     // Remplacez les valeurs ci-dessous par celles de votre projet Firebase.
     // ====================================================
     const firebaseConfig = {
-    apiKey: "AIzaSyCLQMSzHNiOfXD-umi194rayB3-T0_0ekQ",
-    authDomain: "amelina-a6063.firebaseapp.com",
-    databaseURL: "https://amelina-a6063-default-rtdb.firebaseio.com",
-    projectId: "amelina-a6063",
-    storageBucket: "amelina-a6063.firebasestorage.app",
-    messagingSenderId: "221285415211",
-    appId: "1:221285415211:web:1db56bcfe7e3305de02d6e"
+      apiKey: "VOTRE_API_KEY",
+      authDomain: "VOTRE_AUTH_DOMAIN",
+      projectId: "VOTRE_PROJECT_ID",
+      storageBucket: "VOTRE_STORAGE_BUCKET",
+      messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
+      appId: "VOTRE_APP_ID"
     };
 
     // Initialisation de Firebase
@@ -164,279 +201,4 @@
     const dynamicFields = document.getElementById("dynamic-fields");
     const addFieldBtn = document.getElementById("add-field-btn");
     const modalTitle = document.getElementById("modal-title");
-
-    // Variable pour gérer l'écouteur en temps réel
-    let unsubscribe = null;
-
-    // Variables globales pour la gestion de l'état
-    let currentCollection = ""; // Collection actuellement affichée
-    let currentDocId = null;    // Document en cours d'édition (null = ajout)
-    let fieldCounter = 0;       // Compteur pour les champs dynamiques
-
-    // ====================================================
-    // 3. Authentification Firebase
-    // ====================================================
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // L'utilisateur est connecté : affichage du gestionnaire
-        loginContainer.style.display = "none";
-        mainContainer.style.display = "block";
-      } else {
-        // L'utilisateur n'est pas connecté : affichage de la page de connexion
-        loginContainer.style.display = "block";
-        mainContainer.style.display = "none";
-      }
-    });
-
-    // Gestion de la soumission du formulaire de connexion
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      // Connexion via Firebase Authentication (Email/Password)
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          console.log("Utilisateur connecté :", userCredential.user);
-          loginForm.reset();
-        })
-        .catch((error) => {
-          console.error("Erreur de connexion :", error);
-          alert("Erreur de connexion : " + error.message);
-        });
-    });
-
-    // ====================================================
-    // 4. Navigation entre la liste des collections et les documents
-    // ====================================================
-    // Pour chaque lien de collection, on active un écouteur en temps réel pour charger les documents
-    document.querySelectorAll(".collection-link").forEach(link => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        currentCollection = e.target.getAttribute("data-collection");
-        collectionTitle.textContent = "Collection : " + currentCollection;
-        // Masquer la liste des collections et afficher les détails
-        collectionsList.style.display = "none";
-        collectionDetails.style.display = "block";
-        // Charger la collection en temps réel
-        loadCollection(currentCollection);
-      });
-    });
-
-    // Bouton "Retour" pour revenir à la liste des collections
-    backBtn.addEventListener("click", () => {
-      collectionDetails.style.display = "none";
-      collectionsList.style.display = "block";
-      tableHeader.innerHTML = "";
-      tableBody.innerHTML = "";
-      // Se désabonner de l'écouteur de la collection
-      if (unsubscribe) {
-        unsubscribe();
-        unsubscribe = null;
-      }
-    });
-
-    // ====================================================
-    // 5. Fonction pour charger une collection en temps réel
-    // ====================================================
-    function loadCollection(collectionName) {
-      // Se désabonner de l'écouteur précédent s'il existe
-      if (unsubscribe) {
-        unsubscribe();
-      }
-      // Mettre en place l'écouteur en temps réel sur la collection
-      unsubscribe = onSnapshot(collection(db, collectionName), (querySnapshot) => {
-        // Réinitialisation de l'affichage
-        tableHeader.innerHTML = "";
-        tableBody.innerHTML = "";
-        let keys = new Set();
-        const docsData = [];
-        // Récupérer les données de chaque document et extraire les clés
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          data.id = docSnap.id; // Ajout de l'ID du document
-          docsData.push(data);
-          Object.keys(data).forEach(key => keys.add(key));
-        });
-        // Création de l'en-tête du tableau
-        keys = Array.from(keys);
-        keys.unshift("id");
-        keys.push("Actions");
-        keys.forEach(key => {
-          const th = document.createElement("th");
-          th.textContent = key;
-          tableHeader.appendChild(th);
-        });
-        // Remplissage des lignes du tableau
-        docsData.forEach(docData => {
-          const tr = document.createElement("tr");
-          keys.forEach(key => {
-            const td = document.createElement("td");
-            if (key === "Actions") {
-              // Bouton Modifier
-              const editBtn = document.createElement("button");
-              editBtn.textContent = "Modifier";
-              editBtn.className = "btn btn-sm btn-warning mr-2";
-              editBtn.addEventListener("click", () => {
-                openEditModal(docData);
-              });
-              // Bouton Supprimer
-              const deleteBtn = document.createElement("button");
-              deleteBtn.textContent = "Supprimer";
-              deleteBtn.className = "btn btn-sm btn-danger";
-              deleteBtn.addEventListener("click", () => {
-                if (confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
-                  deleteDocument(currentCollection, docData.id);
-                }
-              });
-              td.appendChild(editBtn);
-              td.appendChild(deleteBtn);
-            } else {
-              td.textContent = docData[key] !== undefined ? docData[key] : "";
-            }
-            tr.appendChild(td);
-          });
-          tableBody.appendChild(tr);
-        });
-      }, (error) => {
-        console.error("Erreur lors de l'écoute en temps réel :", error);
-        alert("Erreur lors du chargement de la collection : " + error.message);
-      });
-    }
-
-    // ====================================================
-    // 6. Suppression d'un document
-    // ====================================================
-    async function deleteDocument(collectionName, docId) {
-      try {
-        await deleteDoc(doc(db, collectionName, docId));
-        alert("Document supprimé avec succès.");
-        // La mise à jour de l'affichage se fait automatiquement grâce à onSnapshot.
-      } catch (error) {
-        console.error("Erreur lors de la suppression du document :", error);
-        alert("Erreur lors de la suppression du document : " + error.message);
-      }
-    }
-
-    // ====================================================
-    // 7. Gestion du Modal pour l'ajout / la modification
-    // ====================================================
-    // Ouvrir le modal pour ajouter une nouvelle entrée
-    addEntryBtn.addEventListener("click", () => {
-      currentDocId = null; // Aucun document n'est en cours d'édition
-      modalTitle.textContent = "Ajouter une entrée";
-      dynamicFields.innerHTML = "";
-      fieldCounter = 0;
-      addDynamicField(); // Ajout d'un premier champ
-      entryModal.style.display = "block";
-    });
-
-    // Fermeture du modal via le bouton "×"
-    closeModalBtn.addEventListener("click", () => {
-      entryModal.style.display = "none";
-    });
-
-    // Fonction pour ajouter un champ dynamique (clé/valeur)
-    function addDynamicField(key = "", value = "") {
-      // Création d'un groupe pour la clé
-      const divKey = document.createElement("div");
-      divKey.className = "form-group";
-      const labelKey = document.createElement("label");
-      labelKey.textContent = "Clé :";
-      labelKey.setAttribute("for", "field-key-" + fieldCounter);
-      const inputKey = document.createElement("input");
-      inputKey.type = "text";
-      inputKey.className = "form-control";
-      inputKey.id = "field-key-" + fieldCounter;
-      inputKey.value = key;
-      
-      // Création d'un groupe pour la valeur
-      const divValue = document.createElement("div");
-      divValue.className = "form-group";
-      const labelValue = document.createElement("label");
-      labelValue.textContent = "Valeur :";
-      labelValue.setAttribute("for", "field-value-" + fieldCounter);
-      const inputValue = document.createElement("input");
-      inputValue.type = "text";
-      inputValue.className = "form-control";
-      inputValue.id = "field-value-" + fieldCounter;
-      inputValue.value = value;
-
-      // Ajout des éléments dans le conteneur
-      dynamicFields.appendChild(divKey);
-      divKey.appendChild(labelKey);
-      divKey.appendChild(inputKey);
-      dynamicFields.appendChild(divValue);
-      divValue.appendChild(labelValue);
-      divValue.appendChild(inputValue);
-
-      fieldCounter++;
-    }
-
-    // Bouton pour ajouter un nouveau champ dans le formulaire
-    addFieldBtn.addEventListener("click", () => {
-      addDynamicField();
-    });
-
-    // Gestion de la soumission du formulaire (ajout ou modification)
-    entryForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      // Récupération des données saisies
-      const data = {};
-      for (let i = 0; i < fieldCounter; i++) {
-        const keyInput = document.getElementById("field-key-" + i);
-        const valueInput = document.getElementById("field-value-" + i);
-        if(keyInput && valueInput) {
-          const key = keyInput.value.trim();
-          const value = valueInput.value.trim();
-          if(key !== "") {
-            // Conversion en nombre si possible
-            if(!isNaN(value) && value !== "") {
-              data[key] = Number(value);
-            } else {
-              data[key] = value;
-            }
-          }
-        }
-      }
-      try {
-        if(currentDocId) {
-          // Mode édition
-          const docRef = doc(db, currentCollection, currentDocId);
-          await updateDoc(docRef, data);
-          alert("Document mis à jour avec succès.");
-        } else {
-          // Mode ajout
-          await addDoc(collection(db, currentCollection), data);
-          alert("Document ajouté avec succès.");
-        }
-        entryModal.style.display = "none";
-        // La mise à jour se fait automatiquement via onSnapshot.
-      } catch (error) {
-        console.error("Erreur lors de l'enregistrement du document :", error);
-        alert("Erreur lors de l'enregistrement du document : " + error.message);
-      }
-    });
-
-    // Fonction d'ouverture du modal en mode édition (pré-remplissage des champs)
-    function openEditModal(docData) {
-      currentDocId = docData.id;
-      modalTitle.textContent = "Modifier l'entrée";
-      dynamicFields.innerHTML = "";
-      fieldCounter = 0;
-      // Pour chaque champ du document (sauf l'ID), on crée un champ dynamique
-      for (const key in docData) {
-        if (key === "id") continue;
-        addDynamicField(key, docData[key]);
-      }
-      entryModal.style.display = "block";
-    }
-
-    // Fermeture du modal si l'utilisateur clique en dehors du contenu
-    window.onclick = function(event) {
-      if (event.target === entryModal) {
-        entryModal.style.display = "none";
-      }
-    }
-  </script>
-</body>
-</html>
+    const c
